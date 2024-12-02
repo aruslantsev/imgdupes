@@ -90,9 +90,9 @@ def deduplicate(
         print("=" * 50)
         for file in sorted(component):
             img = Image.open(file)
-            format = img.format
+            img_format = img.format
             size = img.size
-            print(f"{file}: {'x'.join(str(s) for s in size)}, {format}")
+            print(f"{file}: {'x'.join(str(s) for s in size)}, {img_format}")
 
 
 if __name__ == "__main__":
