@@ -6,11 +6,12 @@ import networkx
 import networkx as nx
 import numpy as np
 import torch
+from PIL import Image
 from torchvision import transforms as pth_transforms
 
-from src.files import walk_dir, walk_tree
-from src.search import match
-from src.vectorization import vectorize
+from files import walk_dir, walk_tree
+from search import match
+from vectorization import vectorize
 
 
 def vectorization(images: List[str], queue: multiprocessing.Queue):
@@ -79,17 +80,19 @@ def deduplicate(
     matched = match(embeddings=embs, n_neighbors=min(16, len(paths)))
     matched["pic_query"] = matched["pic_query"].map(idx_to_path)
     matched["pic_index"] = matched["pic_index"].map(idx_to_path)
-    print(matched)
     matched = matched[matched["pic_index"] != matched["pic_query"]]
-    matched = matched[matched["distance"] > 0.9]
+    matched = matched[matched["distance"] > 0.97]
 
     graph = nx.Graph()
     for _, row in matched.iterrows():
         graph.add_edge(row["pic_query"], row["pic_index"])
     for component in networkx.connected_components(graph):
         print("=" * 50)
-        for file in component:
-            print(file)
+        for file in sorted(component):
+            img = Image.open(file)
+            format = img.format
+            size = img.size
+            print(f"{file}: {'x'.join(str(s) for s in size)}, {format}")
 
 
 if __name__ == "__main__":
