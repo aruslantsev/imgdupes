@@ -1,0 +1,5 @@
+torch
+torchvision
+faiss-cpu
+tqdm
+pandas
